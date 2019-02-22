@@ -22,6 +22,8 @@ For example:
 allennlp train --include-package amr_seq2seq experiments/CONFIG.jsonnet -s SAVE_DIR
 ```
 
+In order to continue training, just add `--recover` flag.
+
 ### Evaluation
 In order to evaluate the model on a dataset:
 ```bash
