@@ -1,0 +1,85 @@
+{
+  "dataset_reader": {
+    "type": "amr_reader",
+    "snt_tokenizer": {
+      "type": "character",
+      "lowercase_characters": true
+    },
+    "snt_token_indexers": {
+      "tokens": {
+        "type": "single_id",
+        "namespace": "snt_tokens"
+      }
+    },
+    "linearized_amr_splitter": {
+      "type": "noord_superchar"
+    },
+    "lazy": false,
+    "graph": false
+  },
+  "train_data_path": "datasets/abstract_meaning_representation_amr_2.0/data/amrs/split/training_all.txt",
+  "validation_data_path": "datasets/abstract_meaning_representation_amr_2.0/data/amrs/split/dev_all.txt",
+  "model": {
+    "type": "translation",
+    "source_embedder": {
+      "type": "basic",
+      "token_embedders": {
+        "tokens": {
+          "type": "embedding",
+          "vocab_namespace": "snt_tokens",
+          "embedding_dim": 300,
+          "trainable": true
+        }
+      },
+      "allow_unmatched_keys": true
+    },
+    "encoder": {
+      "type": "lstm",
+      "input_size": 300,
+      "hidden_size": 300,
+      "num_layers": 3,
+      "dropout": 0.7,
+      "bidirectional": true
+    },
+    "max_decoding_steps": 500,
+    "target_namespace": "linearized_superchar_tokens",
+    "attention": {
+      "type": "bilinear",
+      "vector_dim": 600,
+      "matrix_dim": 600
+    },
+    "beam_size": 8,
+    "use_bleu": true,
+    "source_field": "snt",
+    "target_field": "amr_linearized"
+  },
+  "iterator": {
+    "type": "bucket",
+    "padding_noise": 0,
+    "batch_size": 50,
+//    "max_instances_in_memory": 100000,
+    "sorting_keys": [
+      [
+        "snt",
+        "num_tokens"
+      ],
+      [
+        "amr_linearized",
+        "num_tokens"
+      ]
+    ],
+    "biggest_batch_first": true
+  },
+  "trainer": {
+    "num_epochs": 500,
+    "summary_interval": 100,
+    "cuda_device": 0,
+    "num_serialized_models_to_keep": 200,
+    "optimizer": {
+      "type": "adam"//,
+//      "lr": 0.05,
+//      "momentum": 0.9,
+//      "nesterov": true
+    }
+  }
+}
